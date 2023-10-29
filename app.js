@@ -8,7 +8,8 @@ var logger = require('morgan');
 const dbConnect = require('./config/dbConnect');
 
 var app = express();
-const router  = require('./routes')
+const router = require('./routes')
+cors();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
