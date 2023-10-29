@@ -1,0 +1,36 @@
+const dotenv = require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const secretKey = process.env.JWT_SECRET_KEY;
+const refreshedTokenKey = process.env.JWT_REFRESH_TOKEN_SECRET_KEY;
+
+const generateAccessToken = function (payload) {
+  return jwt.sign(payload, secretKey, { expiresIn: "1800s" });
+};
+
+const refreshToken = (payload) => {
+  return jwt.sign(payload, refreshedTokenKey, { expiresIn: "1d" });
+};
+
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'token cant be empty '});
+    }
+  
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ message: err.message });
+      }
+      req.user = decoded;
+      next();
+    });
+  };
+  
+  
+
+module.exports = {
+  generateAccessToken,
+  refreshToken,
+  verifyToken,
+};
