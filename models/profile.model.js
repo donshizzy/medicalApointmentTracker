@@ -32,12 +32,12 @@ const userProfileSchema = new Schema({
     type: "Date",
   },
   gender: {
-      type: "String",
-      enum: ["Female", "Male"]
-    },
-    department: {
-      type:'String'
-  }
+    type: "String",
+    enum: ["Female", "Male"],
+  },
+  department: {
+    type: "String",
+  },
 });
 
 const Profile = mongoose.model("Profile", userProfileSchema);

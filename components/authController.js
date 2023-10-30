@@ -25,8 +25,8 @@ const signup = async (req, res, next) => {
     }
     const hashDigit = await hashpassword(password);
     const user = new User({
-      email,
-      username,
+      username:email,
+      email:username,
       password: hashDigit,
     });
     await user.save();
@@ -40,7 +40,11 @@ const signup = async (req, res, next) => {
     return res.status(201).json({
       status: 201,
       message: "Signup successful",
-      user: { userId: user._id, email: user.email, username: user.username },
+      user: {
+        userId: user._id,
+        email: user.email, 
+        username: user.username,
+      },
       token: "JWT " + token,
     });
   } catch (error) {
@@ -141,15 +145,18 @@ const checkUserDesignation  = async (req, res)=>{
 const getRegistrationStatus = async (req,res)=>{
   
   const user = req.user._id;
-  const userRegistrationStatus = user.registered;
+  /* const userRegistrationStatus = user.registered;*/
   try {
     const userProfile = await Profile.findOne({userId:user});
-    if(!userProfile){
-      return res.status(400).json({message:'User Profile not found kindly fill the user profile registration data'});
+    if (!userProfile)
+    {
+      user.registered = false;
+      return res.status(400).json({registered:false, message: "User not found"});
 
     }
-
-    return res.status(200).json({message:'registered'})
+    user.registered = true;
+    await user.save();
+    return res.status(200).json({ registered: true , userProfile});
     
   } catch (error) {
     console.log(error.message)
@@ -162,5 +169,5 @@ module.exports = {
   signIn,
   refreshUserToken,
   checkUserDesignation,
-  getRegistrationStatus
+  getRegistrationStatus,
 };
